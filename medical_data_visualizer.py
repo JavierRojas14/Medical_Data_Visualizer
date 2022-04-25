@@ -22,8 +22,8 @@ df[mask] = 1
 # Draw Categorical Plot
 def draw_cat_plot():
     # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
-    df_cat = None
-
+    df_cat = pd.melt(df, id_vars = ['cardio'], value_vars = ['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
+    
 
     # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
     df_cat = None
@@ -40,7 +40,17 @@ def draw_cat_plot():
 # Draw Heat Map
 def draw_heat_map():
     # Clean the data
-    df_heat = None
+    mask_diastolic = df['ap_lo'] <= df['ap_hi']
+
+    mask_height_1 = df['height'] >= df['height'].quantile(0.025)
+    mask_height_2 = df['height'] <= df['height'].quantile(0.975)
+
+    mask_weight_1 = df['weight'] >= df['weight'].quantile(0.025)
+    mask_weight_2 = df['weight'] <= df['weight'].quantile(0.975)
+
+    mask_total = (mask_diastolic) & (mask_height_1) & (mask_height_2) & (mask_weight_1) & (mask_weight_2)
+
+    df_heat = df[mask_total]
 
     # Calculate the correlation matrix
     corr = None
