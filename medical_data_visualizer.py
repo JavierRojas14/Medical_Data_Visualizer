@@ -21,27 +21,27 @@ df[mask] = 1
 
 # Draw Categorical Plot
 def draw_cat_plot():
-    # # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
-    # df_cat = pd.melt(df, id_vars = ['cardio'], value_vars = ['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
+    # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
+    df_cat = pd.melt(df, id_vars = 'cardio', value_vars = ['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
     
 
     # # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
-    # df_cat = None
+    df_cat_total = pd.DataFrame(columns = ['cardio', 'variable', 'value'])
 
-    df_catplot = pd.DataFrame(columns = ['tipo dato', 'total', 'valor'])
-    columnas = ['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight']
+    for i in df_cat.variable.unique():
+        df_nueva = df_cat[df_cat['variable'] == i]
+        df_nueva = pd.DataFrame(df_nueva.value_counts())
+        df_nueva = df_nueva.reset_index()
+        df_cat_total = pd.concat([df_cat_total, df_nueva])
 
-    for tipo_dato in columnas:
-        nueva_fila = pd.DataFrame({'tipo dato': [tipo_dato for d in df[tipo_dato].value_counts()],
-                                'total': df[tipo_dato].value_counts(),
-                                'valor': df[tipo_dato].value_counts().index})
-        df_catplot = pd.concat([df_catplot, nueva_fila])
+    df_cat_total.rename(columns = {0: 'total'}, inplace = True)
+
 
     # Draw the catplot with 'sns.catplot()'
-    fig, axis = plt.subplots(figsize = (12, 6))
-    sns.catplot(data = df_catplot, x = 'tipo dato', y = 'total', hue = 'valor', kind = 'bar')
+    fig = sns.catplot(data = df_cat_total, x = 'variable', y = 'total', hue = 'value', col = 'cardio', 
+            kind = 'bar', height = 5, aspect = 1.25)
 
-
+    
     # Do not modify the next two lines
     fig.savefig('catplot.png')
     return fig
