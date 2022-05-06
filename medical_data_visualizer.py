@@ -35,10 +35,13 @@ def draw_cat_plot():
         df_cat_total = pd.concat([df_cat_total, df_nueva])
 
     df_cat_total.rename(columns = {0: 'total'}, inplace = True)
+    df_cat_total = df_cat_total.sort_values('variable', ascending = True)
 
 
     # Draw the catplot with 'sns.catplot()'
-    fig = sns.catplot(data = df_cat_total, x = 'variable', y = 'total', hue = 'value', col = 'cardio', 
+    fig, ax = plt.subplots(figsize = (12, 6))
+    
+    sns.catplot(data = df_cat_total, x = 'variable', y = 'total', hue = 'value', col = 'cardio', 
             kind = 'bar', height = 5, aspect = 1.25)
 
     
@@ -61,21 +64,21 @@ def draw_heat_map():
     mask_total = (mask_diastolic) & (mask_height_1) & (mask_height_2) & (mask_weight_1) & (mask_weight_2)
 
     df_heat = df[mask_total]
+    df_heat.drop('BMI', axis = 1, inplace = True)
 
     # Calculate the correlation matrix
-    corr = None
+    corr = df_heat.corr()
 
     # Generate a mask for the upper triangle
-    mask = None
+    mask = np.triu(np.ones_like(corr))
 
 
 
     # Set up the matplotlib figure
-    fig, ax = None
+    fig, ax = plt.subplots(figsize = (12, 10))
 
     # Draw the heatmap with 'sns.heatmap()'
-
-
+    sns.heatmap(data = corr, vmin = -0.1, vmax = 0.3, center = 0, annot = True, mask = mask, fmt = '.1f', linewidths = 1.5)
 
     # Do not modify the next two lines
     fig.savefig('heatmap.png')
